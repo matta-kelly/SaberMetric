@@ -24,16 +24,20 @@ Before running the project, ensure you have the following installed:
 
 ## Files Description
 
+### Payroll.csv
+- Manually sourced payroll for 2023 MlB season
+
 ### `Import.py`
 This script is responsible for fetching and preprocessing Statcast pitch data from the specified MLB season. Key operations include:
 - **Data Fetching:** Using the `pybaseball` library, it retrieves event data between specified dates.
-- **Preprocessing:** Filters out incomplete records, normalizes player names using `unidecode`, and prepares several datasets for further analysis.
-- **Data Export:** Outputs a filtered event dataset to `2023_mlb_event_data.csv` and performs initial calculations of Win Probability Added (WPA) and Run Expectancy (RE) for further use.
+- **Preprocessing:** Filters out incomplete records, normalizes player names using `unidecode`, assigns players to teams, and prepares several datasets for further analysis. Additionally, all pitches which do not result in an outcome (thus strike and ball) are filtered out.
+- **Gamescoring** Goes through pitch data and assigns WPA and RE scores from each event to the corresponding players. 
+- **Data Export:** Outputs a filtered event dataset to `2023_mlb_event_data.csv` and performs initial calculations of Win Probability Added (WPA) and Run Expectancy (RE) for further use. Batter and Pitcher Csv's are created to store stats for the respective players and game restults csv is created to store game results. 
 
 ### `Create_Graph.py`
 Builds a directed multigraph representing the interactions between pitchers and batters:
 - **Data Loading:** Reads the preprocessed CSV files to retrieve player statistics.
-- **Graph Construction:** Utilizes `NetworkX` to create nodes for each player (pitchers and batters) and edges that represent game events.
+- **Graph Construction:** Utilizes `NetworkX` to create nodes for each player (pitchers and batters) and edges that represent game events. There are a maximum of two edges between each pitcher and batter, one for RE and one for WPA. These edges represent the cummulative stats for all the matchups between the respective players and the edge is directed towards the player who has the postive RE or WPA.
 - **Node and Edge Attributes:** Each node stores player stats, and edges are weighted by performance metrics (WPA, RE, scores from events).
 - **Graph Serialization:** Saves the graph to a file `player_network.pickle` for use in subsequent analysis.
 
